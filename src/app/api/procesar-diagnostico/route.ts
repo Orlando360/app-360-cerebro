@@ -20,11 +20,11 @@ export async function POST(request: NextRequest) {
     // Mark as processing
     await diagnosticosDb.updateEstado(diagnosticoId, "procesando");
 
-    const respuestas = diagnostico.respuestas;
+    const r = diagnostico.respuestas;
 
     const prompt = `Eres El Cerebro 360 — el sistema de inteligencia estratégica de Orlando Iguarán, el mejor creador de alianzas marca-influencer en Colombia.
 
-Acabas de recibir un diagnóstico empresarial de un cliente potencial. Tu trabajo es analizar TODA la información y generar una estrategia completa, accionable y personalizada.
+Acabas de recibir un diagnóstico empresarial completo. Tu trabajo es analizar TODA la información y generar una estrategia calibrada al nivel real del negocio.
 
 == DATOS DEL CLIENTE ==
 Nombre: ${diagnostico.nombre}
@@ -32,54 +32,70 @@ Empresa: ${diagnostico.empresa}
 Email: ${diagnostico.email}
 WhatsApp: ${diagnostico.whatsapp}
 
-== RESPUESTAS DEL CUESTIONARIO ==
-NEGOCIO:
-- Nombre del negocio: ${respuestas.businessName || "N/A"}
-- Industria: ${respuestas.industry || "N/A"}
-- Descripción: ${respuestas.businessDescription || "N/A"}
-- Años en el mercado: ${respuestas.yearsInBusiness || "N/A"}
-- Tamaño del equipo: ${respuestas.employeeCount || "N/A"}
+== NEGOCIO ==
+- Nombre: ${r.businessName || "N/A"}
+- Industria: ${r.industry || "N/A"}
+- Qué hace y a quién sirve: ${r.businessDescription || "N/A"}
+- Facturación mensual: ${r.monthlyRevenue || "N/A"}
+- Ticket promedio por cliente: ${r.averageTicket || "N/A"}
+- Años en el mercado: ${r.yearsInBusiness || "N/A"}
+- Tamaño del equipo: ${r.employeeCount || "N/A"}
 
-DOLOR PRINCIPAL:
-- Problema #1: ${respuestas.mainPain || "N/A"}
-- Problemas específicos: ${respuestas.specificProblems || "N/A"}
-- Lo que han intentado: ${respuestas.whatTheyTried || "N/A"}
-- Nivel de urgencia (1-10): ${respuestas.urgencyLevel || "N/A"}
-- Pérdida mensual estimada: ${respuestas.monthlyLoss || "N/A"}
+== DOLOR ==
+- Problema #1: ${r.mainPain || "N/A"}
+- Impacto en el día a día: ${r.dailyImpact || "N/A"}
+- Lo que han intentado: ${r.whatTheyTried || "N/A"}
+- Urgencia (1-10): ${r.urgencyLevel || "N/A"}
+- Pérdida mensual estimada: ${r.monthlyLoss || "N/A"}
 
-MERCADO:
-- Cliente ideal: ${respuestas.idealClient || "N/A"}
-- Cómo consigue clientes: ${respuestas.currentClients || "N/A"}
-- Servicios principales: ${respuestas.mainServices || "N/A"}
-- Diferenciador: ${respuestas.differentiator || "N/A"}
-- Competidores: ${respuestas.competitors || "N/A"}
+== MERCADO ==
+- Cliente ideal: ${r.idealClient || "N/A"}
+- Canales de adquisición actuales: ${r.acquisitionChannels || "N/A"}
+- Clientes nuevos por mes: ${r.newClientsPerMonth || "N/A"}
+- Servicios/productos principales: ${r.mainServices || "N/A"}
+- Diferenciador: ${r.differentiator || "N/A"}
+- Competidores: ${r.competitors || "N/A"}
 
-SOLUCIÓN DIGITAL:
-- Tipo de app: ${respuestas.appType || "N/A"}
-- Features imprescindibles: ${respuestas.mustHaveFeatures || "N/A"}
-- Presupuesto: ${respuestas.budget || "N/A"}
-- Timeline: ${respuestas.timeline || "N/A"}
+== OBJETIVO ==
+- Meta a 90 días: ${r.goal90Days || "N/A"}
+- Meta numérica concreta: ${r.numericGoal || "N/A"}
+- Disposición de inversión: ${r.investmentBudget || "N/A"}
+
+== INSTRUCCIONES PARA CALIBRAR LA ESTRATEGIA ==
+IMPORTANTE: Usa la facturación (${r.monthlyRevenue || "N/A"}), el ticket promedio (${r.averageTicket || "N/A"}), los clientes nuevos/mes (${r.newClientsPerMonth || "N/A"}) y los canales de adquisición (${r.acquisitionChannels || "N/A"}) para calibrar el nivel de la estrategia:
+- Si factura <$5M COP → estrategia de supervivencia y primeros ingresos
+- Si factura $5M-$50M COP → estrategia de estabilización y crecimiento
+- Si factura >$50M COP → estrategia de escalamiento y optimización
+- Los KPIs y targets deben ser REALISTAS para su nivel actual
+- Las recomendaciones de inversión deben ser proporcionales a su facturación
 
 == TU MISIÓN ==
-Genera una estrategia completa con estos 6 bloques. Sé directo, específico y accionable. No uses lenguaje genérico — todo debe ser personalizado para ESTE negocio.
+Genera una estrategia completa con estos 6 bloques. Sé directo, específico y accionable. No uses lenguaje genérico — todo debe ser personalizado para ESTE negocio en su nivel actual.
 
 BLOQUE 1: DIAGNÓSTICO EJECUTIVO
-Un párrafo que resuma la situación real del negocio. Identifica el dolor raíz (no el síntoma).
+Un párrafo que resuma la situación real del negocio. Incluye contexto de facturación y ticket promedio para calibrar la dimensión del problema. Identifica el dolor raíz (no el síntoma).
 
 BLOQUE 2: PRINCIPALES BRECHAS DETECTADAS
-Lista las 3-5 brechas más críticas entre dónde están y dónde quieren estar. Sé brutal y honesto.
+3-5 brechas críticas. Para cada una, indica el impacto estimado en $ basado en su facturación y ticket promedio actual. Sé brutal y honesto.
 
 BLOQUE 3: OPORTUNIDADES INMEDIATAS
-3-5 oportunidades que pueden capturar en las próximas 2 semanas sin inversión significativa.
+3-5 oportunidades concretas para las próximas 2 semanas. Prioriza según los canales de adquisición que YA usan (${r.acquisitionChannels || "N/A"}). Incluye estimado de impacto en clientes nuevos basado en su volumen actual (${r.newClientsPerMonth || "N/A"}/mes).
 
 BLOQUE 4: ESTRATEGIA RECOMENDADA 90 DÍAS
-Plan de acción dividido en 3 fases de 30 días cada una. Cada fase con objetivos claros y acciones específicas.
+Plan de acción en 3 fases de 30 días. Cada fase con:
+- Objetivo claro vinculado a su meta numérica (${r.numericGoal || "N/A"})
+- 3-5 acciones específicas
+- Inversión estimada por fase (calibrada a su disposición: ${r.investmentBudget || "N/A"})
+- Revenue esperado por fase
 
 BLOQUE 5: KPIs A MONITOREAR
-5-7 métricas concretas que deben rastrear para medir progreso. Con targets específicos.
+5-7 métricas con targets ESPECÍFICOS calibrados a su nivel:
+- Usar su facturación actual como baseline
+- Usar su ticket promedio para calcular targets de conversión
+- Usar su volumen de clientes/mes para targets de crecimiento
 
 BLOQUE 6: PRÓXIMO PASO CONCRETO
-UN solo paso que deben dar mañana para empezar. Específico, medible y alcanzable.
+UN solo paso para mañana. Específico, medible y alcanzable para un negocio de su tamaño.
 
 Formatea con markdown. Usa headers ##, listas, negrita para énfasis. Escribe en español colombiano profesional.`;
 
