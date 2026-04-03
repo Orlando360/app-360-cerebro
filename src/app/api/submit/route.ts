@@ -71,9 +71,8 @@ export async function POST(request: NextRequest) {
       });
 
       // Fire-and-forget: trigger Claude processing in background
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
+      const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || vercelUrl || "http://localhost:3000";
 
       fetch(`${baseUrl}/api/procesar-diagnostico`, {
         method: "POST",
