@@ -14,38 +14,38 @@ interface Question {
 
 const QUESTIONS: Question[] = [
   // Sección 1: Tus Datos
-  { id: "contactName", label: "Tu nombre completo", type: "text", placeholder: "Nombre y apellido", required: true, section: "Tus Datos" },
-  { id: "contactPhone", label: "Tu WhatsApp (con código de país)", type: "tel", placeholder: "+57 300 123 4567", required: true, section: "Tus Datos" },
-  { id: "contactEmail", label: "Tu email de trabajo", type: "email", placeholder: "email@tunegocio.com", required: true, section: "Tus Datos" },
+  { id: "contactName", label: "Nombre completo", type: "text", placeholder: "Nombre y apellido", required: true, section: "Tus Datos" },
+  { id: "contactPhone", label: "WhatsApp con código de país", type: "tel", placeholder: "+57 300 123 4567", required: true, section: "Tus Datos" },
+  { id: "contactEmail", label: "Email de trabajo", type: "email", placeholder: "email@tunegocio.com", required: true, section: "Tus Datos" },
 
   // Sección 2: Tu Negocio
-  { id: "businessName", label: "¿Cuál es el nombre de tu negocio?", type: "text", placeholder: "Ej: Clínica Dental Premium", required: true, section: "Tu Negocio" },
-  { id: "industry", label: "¿En qué industria o sector estás?", type: "select", options: ["Salud y Bienestar", "Tecnología", "Gastronomía y Restaurantes", "Belleza y Estética", "Educación", "Legal y Jurídico", "Inmobiliaria", "Fitness y Deporte", "Retail / Comercio", "Consultoría", "Marketing y Publicidad", "Construcción", "Transporte y Logística", "Otro"], required: true, section: "Tu Negocio" },
+  { id: "businessName", label: "Nombre del negocio", type: "text", placeholder: "Ej: Clínica Dental Premium", required: true, section: "Tu Negocio" },
+  { id: "industry", label: "Industria", type: "select", options: ["Salud", "Tecnología", "Gastronomía", "Belleza", "Educación", "Legal", "Inmobiliaria", "Fitness", "Retail", "Consultoría", "Marketing", "Construcción", "Transporte", "Otro"], required: true, section: "Tu Negocio" },
   { id: "businessDescription", label: "¿Qué hace tu negocio exactamente y a quién le sirve?", type: "textarea", placeholder: "Describe qué vendes o qué servicio ofreces, y quién es tu cliente típico", required: true, section: "Tu Negocio" },
   { id: "monthlyRevenue", label: "Facturación mensual aproximada", type: "select", options: ["Menos de $5M COP", "$5M–$15M COP", "$15M–$50M COP", "$50M–$150M COP", "Más de $150M COP", "Prefiero no decirlo"], required: true, section: "Tu Negocio" },
   { id: "averageTicket", label: "Ticket promedio por cliente o venta", type: "select", options: ["Menos de $100K COP", "$100K–$500K COP", "$500K–$2M COP", "$2M–$10M COP", "Más de $10M COP"], required: true, section: "Tu Negocio" },
-  { id: "yearsInBusiness", label: "¿Cuántos años llevas en el mercado?", type: "select", options: ["Menos de 1 año", "1–3 años", "3–5 años", "5–10 años", "Más de 10 años"], required: true, section: "Tu Negocio" },
-  { id: "employeeCount", label: "¿Cuántas personas trabajan contigo?", type: "select", options: ["Solo yo", "2–5 personas", "6–15 personas", "16–50 personas", "Más de 50"], section: "Tu Negocio" },
+  { id: "yearsInBusiness", label: "Años en el mercado", type: "select", options: ["Menos de 1", "1–3", "3–5", "5–10", "Más de 10"], required: true, section: "Tu Negocio" },
+  { id: "employeeCount", label: "Personas en el equipo", type: "select", options: ["Solo yo", "2–5", "6–15", "16–50", "Más de 50"], section: "Tu Negocio" },
 
   // Sección 3: Tu Dolor
   { id: "mainPain", label: "¿Cuál es el problema número 1 que frena tu negocio ahora mismo?", type: "textarea", placeholder: "Sé específico. No me digas 'quiero más clientes'. Dime exactamente qué está fallando.", required: true, section: "Tu Dolor" },
   { id: "dailyImpact", label: "¿Cómo te afecta ese problema en el día a día?", type: "textarea", placeholder: "¿Pierdes tiempo? ¿Pierdes plata? ¿Te frustra? ¿Afecta a tu equipo? Cuéntame todo.", required: true, section: "Tu Dolor" },
   { id: "whatTheyTried", label: "¿Qué has intentado para resolverlo y por qué no funcionó?", type: "textarea", placeholder: "¿Contrataste agencia? ¿Hiciste ads? ¿Cambiaste de estrategia? Cuéntame qué no funcionó.", section: "Tu Dolor" },
-  { id: "urgencyLevel", label: "Del 1 al 10, ¿qué tan urgente es resolver esto?", type: "range", required: true, section: "Tu Dolor" },
-  { id: "monthlyLoss", label: "¿Cuánto estimas que pierdes al mes por no resolver este problema?", type: "select", options: ["Menos de $500 USD", "$500–$2,000 USD", "$2,000–$5,000 USD", "$5,000–$10,000 USD", "Más de $10,000 USD", "No estoy seguro"], section: "Tu Dolor" },
+  { id: "urgencyLevel", label: "Urgencia del 1 al 10", type: "range", required: true, section: "Tu Dolor" },
+  { id: "monthlyLoss", label: "Pérdida mensual estimada", type: "select", options: ["Menos de $500 USD", "$500–$2K USD", "$2K–$5K USD", "$5K–$10K USD", "Más de $10K USD", "No estoy seguro"], section: "Tu Dolor" },
 
   // Sección 4: Tu Mercado
   { id: "idealClient", label: "Describe tu cliente ideal — quién es, qué le duele, qué quiere lograr", type: "textarea", placeholder: "Edad, ubicación, nivel económico, qué problema tiene, cómo te encuentra...", required: true, section: "Tu Mercado" },
-  { id: "acquisitionChannels", label: "¿Cómo consigues clientes actualmente?", type: "multiselect", options: ["Referidos", "Instagram o TikTok orgánico", "Pauta digital (Meta Ads, Google Ads)", "Google (SEO / búsqueda)", "Ventas directas", "WhatsApp", "Otro"], required: true, section: "Tu Mercado" },
-  { id: "newClientsPerMonth", label: "¿Cuántos clientes nuevos consigues al mes?", type: "select", options: ["0–2", "3–10", "11–30", "31–100", "Más de 100"], required: true, section: "Tu Mercado" },
+  { id: "acquisitionChannels", label: "¿Cómo consigues clientes actualmente?", type: "multiselect", options: ["Referidos", "Instagram o TikTok orgánico", "Pauta digital", "Google", "Ventas directas", "WhatsApp", "Otro"], required: true, section: "Tu Mercado" },
+  { id: "newClientsPerMonth", label: "Clientes nuevos por mes", type: "select", options: ["0–2", "3–10", "11–30", "31–100", "Más de 100"], required: true, section: "Tu Mercado" },
   { id: "mainServices", label: "¿Cuáles son tus servicios o productos principales?", type: "textarea", placeholder: "Lista tus 3–5 servicios o productos más importantes", required: true, section: "Tu Mercado" },
   { id: "differentiator", label: "¿Qué te diferencia de tu competencia — por qué te compran a ti?", type: "textarea", placeholder: "¿Por qué un cliente debería elegirte a ti y no al de al lado?", required: true, section: "Tu Mercado" },
-  { id: "competitors", label: "¿Quiénes son tus competidores directos?", type: "textarea", placeholder: "Nombres, URLs o perfiles de redes de tu competencia directa", section: "Tu Mercado" },
+  { id: "competitors", label: "Competidores directos", type: "textarea", placeholder: "Nombres, URLs o perfiles de redes de tu competencia directa", section: "Tu Mercado" },
 
   // Sección 5: Tu Objetivo
   { id: "goal90Days", label: "¿Qué quieres lograr en los próximos 90 días? Descríbelo con el mayor detalle posible", type: "textarea", placeholder: "Duplicar ventas, lanzar producto nuevo, conseguir 50 clientes nuevos, sistematizar operaciones...", required: true, section: "Tu Objetivo" },
   { id: "numericGoal", label: "¿Tienes una meta numérica concreta — facturación, clientes, conversión?", type: "textarea", placeholder: "Ej: Llegar a $50M/mes, conseguir 30 clientes nuevos, pasar de 2% a 5% conversión...", required: true, section: "Tu Objetivo" },
-  { id: "investmentBudget", label: "¿Cuánto estás dispuesto a invertir para lograr ese objetivo?", type: "select", options: ["$500–$1,500 USD", "$1,500–$3,000 USD", "$3,000–$5,000 USD", "Más de $5,000 USD", "Lo que sea necesario si funciona"], section: "Tu Objetivo" },
+  { id: "investmentBudget", label: "Disposición de inversión", type: "select", options: ["$500–$1.5K USD", "$1.5K–$3K USD", "$3K–$5K USD", "Más de $5K USD", "Lo que sea necesario"], section: "Tu Objetivo" },
 ];
 
 const SECTIONS = [...new Set(QUESTIONS.map(q => q.section))];
@@ -114,7 +114,6 @@ export default function CuestionarioPage() {
     setError("");
 
     try {
-      // Flatten multiselect arrays to comma-separated strings for API
       const payload: Record<string, string> = {};
       for (const [key, val] of Object.entries(answers)) {
         payload[key] = Array.isArray(val) ? val.join(", ") : val;
@@ -145,7 +144,7 @@ export default function CuestionarioPage() {
           <div style={{ fontSize: 64, marginBottom: 20 }}>✅</div>
           <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: 15, color: "#fff" }}>¡Diagnóstico Recibido!</h1>
           <p style={{ color: "#A0A0A0", fontSize: "1.1rem", lineHeight: 1.7, marginBottom: 30 }}>
-            Tu diagnóstico empresarial ha sido enviado exitosamente. Orlando revisará tu caso personalmente y se pondrá en contacto contigo por {(answers.preferredContact as string) || "WhatsApp"} en las próximas 24 horas.
+            Tu diagnóstico empresarial ha sido enviado exitosamente. Orlando revisará tu caso personalmente y se pondrá en contacto contigo por WhatsApp en las próximas 24 horas.
           </p>
           <a href="https://wa.link/33ogyz" target="_blank" style={{ display: "inline-block", background: "#25D366", color: "#fff", padding: "14px 30px", borderRadius: 8, textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
             Escribir a Orlando por WhatsApp →
@@ -179,6 +178,24 @@ export default function CuestionarioPage() {
           </div>
           <div className="progress-bar">
             <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+          </div>
+          {/* Section steps */}
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10, gap: 4 }}>
+            {SECTIONS.map((section, i) => (
+              <div
+                key={section}
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: 11,
+                  color: i === currentSection ? "#F5C518" : i < currentSection ? "#555" : "#333",
+                  fontWeight: i === currentSection ? 700 : 400,
+                  transition: "all 0.2s",
+                }}
+              >
+                {section}
+              </div>
+            ))}
           </div>
         </div>
 
