@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Question {
   id: string;
@@ -50,12 +50,38 @@ const QUESTIONS: Question[] = [
 
 const SECTIONS = [...new Set(QUESTIONS.map(q => q.section))];
 
+const PIPELINE_STEPS = [
+  { key: "procesando_diagnostico", label: "Diagnóstico Ejecutivo", desc: "Analizando 9 pilares del negocio..." },
+  { key: "procesando_brechas", label: "Brechas Críticas", desc: "Identificando las 3 brechas de mayor impacto..." },
+  { key: "procesando_plan", label: "Plan 90 Días", desc: "Diseñando el plan de acción en 3 fases..." },
+  { key: "procesando_propuesta", label: "Propuesta Comercial", desc: "Calculando ROI y estructurando propuesta..." },
+  { key: "procesando_reporte", label: "Reporte Final", desc: "Consolidando el reporte ejecutivo completo..." },
+];
+
+function getStepIndex(pipelineStatus: string): number {
+  const map: Record<string, number> = {
+    procesando_diagnostico: 0,
+    procesando_brechas: 1,
+    procesando_plan: 2,
+    procesando_propuesta: 3,
+    procesando_reporte: 4,
+    completado: 5,
+  };
+  return map[pipelineStatus] ?? 0;
+}
+
 export default function CuestionarioPage() {
   const [currentSection, setCurrentSection] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Pipeline progress
+  const [diagnosticoId, setDiagnosticoId] = useState<string | null>(null);
+  const [procesando, setProcesando] = useState(false);
+  const [pipelineStatus, setPipelineStatus] = useState("procesando_diagnostico");
+  const [reporteFinal, setReporteFinal] = useState<string | null>(null);
 
   const sectionQuestions = QUESTIONS.filter(q => q.section === SECTIONS[currentSection]);
   const progress = ((currentSection + 1) / SECTIONS.length) * 100;
@@ -108,6 +134,34 @@ export default function CuestionarioPage() {
     }
   };
 
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!diagnosticoId || !procesando) return;
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/status/${diagnosticoId}`);
+        const data = await res.json();
+        if (data.pipeline_status) setPipelineStatus(data.pipeline_status);
+        if (data.pipeline_status === "completado") {
+          if (pollingRef.current) clearInterval(pollingRef.current);
+          setProcesando(false);
+          setReporteFinal(data.agent_outputs?.reporte_final || "");
+        }
+        if (data.estado === "error") {
+          if (pollingRef.current) clearInterval(pollingRef.current);
+          setProcesando(false);
+          setError("Error generando el diagnóstico. Por favor intenta de nuevo.");
+        }
+      } catch {
+        // silent — keep polling
+      }
+    }, 3000);
+
+    return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
+  }, [diagnosticoId, procesando]);
+
   const handleSubmit = async () => {
     if (!validateSection()) return;
     setLoading(true);
@@ -125,10 +179,23 @@ export default function CuestionarioPage() {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (data.success) {
-        setSubmitted(true);
-      } else {
+      if (!data.success) {
         setError(data.error || "Error al enviar. Intenta de nuevo.");
+        return;
+      }
+
+      setSubmitted(true);
+      const diagId = data.diagnosticoId;
+      if (diagId) {
+        setDiagnosticoId(diagId);
+        setProcesando(true);
+        setPipelineStatus("procesando_diagnostico");
+        // Fire pipeline
+        fetch("/api/procesar-diagnostico", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ diagnosticoId: diagId }),
+        }).catch(console.error);
       }
     } catch {
       setError("Error de conexión. Verifica tu internet e intenta de nuevo.");
@@ -137,7 +204,79 @@ export default function CuestionarioPage() {
     }
   };
 
-  if (submitted) {
+  // ── Reporte listo ──────────────────────────────────────────────────────────
+  if (reporteFinal !== null) {
+    return (
+      <main style={{ minHeight: "100vh", background: "#0A0A0A", padding: "40px 20px" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#F5C518", letterSpacing: 2, marginBottom: 10, textTransform: "uppercase" }}>Método 360 — Orlando Iguarán</div>
+            <h1 style={{ fontSize: "2rem", fontWeight: 800, color: "#fff", marginBottom: 8 }}>Tu Reporte Ejecutivo está listo</h1>
+            <p style={{ color: "#666", fontSize: 14 }}>5 agentes de IA analizaron tu negocio en profundidad</p>
+          </div>
+          <div style={{ background: "#111", border: "1px solid #222", borderRadius: 16, padding: "36px 40px", color: "#E0E0E0", fontSize: 15, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "'DM Mono', monospace" }}>
+            {reporteFinal}
+          </div>
+          <div style={{ textAlign: "center", marginTop: 32, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="https://wa.link/33ogyz" target="_blank" style={{ display: "inline-block", background: "#25D366", color: "#fff", padding: "14px 30px", borderRadius: 8, textDecoration: "none", fontWeight: 700, fontSize: 15 }}>
+              Hablar con Orlando por WhatsApp →
+            </a>
+            <button onClick={() => window.print()} style={{ background: "transparent", border: "1px solid #333", color: "#999", padding: "14px 24px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "inherit" }}>
+              Imprimir / Guardar PDF
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // ── Procesando pipeline ────────────────────────────────────────────────────
+  if (submitted && procesando) {
+    const stepIdx = getStepIndex(pipelineStatus);
+    return (
+      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0A0A0A", padding: "40px 20px" }}>
+        <div style={{ maxWidth: 560, width: "100%" }}>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#F5C518", letterSpacing: 2, marginBottom: 10, textTransform: "uppercase" }}>Cerebro 360 procesando</div>
+            <h1 style={{ fontSize: "1.8rem", fontWeight: 800, color: "#fff", marginBottom: 8 }}>Analizando tu negocio</h1>
+            <p style={{ color: "#666", fontSize: 14 }}>5 agentes de IA trabajan en paralelo — tarda ~2 minutos</p>
+          </div>
+
+          {/* Progress bar */}
+          <div style={{ background: "#1A1A1A", borderRadius: 4, height: 4, marginBottom: 32, overflow: "hidden" }}>
+            <div style={{ height: "100%", background: "linear-gradient(90deg, #C9A015, #F5C518)", borderRadius: 4, width: `${Math.min((stepIdx / 5) * 100, 95)}%`, transition: "width 0.8s ease" }} />
+          </div>
+
+          {/* Steps */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {PIPELINE_STEPS.map((s, i) => {
+              const done = i < stepIdx;
+              const active = i === stepIdx;
+              return (
+                <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", background: active ? "rgba(245,197,24,0.06)" : "#111", border: `1px solid ${active ? "#F5C518" : done ? "#2A2A2A" : "#1A1A1A"}`, borderRadius: 10, transition: "all 0.4s" }}>
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: done ? "#2A2A1A" : active ? "rgba(245,197,24,0.15)" : "#1A1A1A", border: `2px solid ${done ? "#F5C518" : active ? "#F5C518" : "#333"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 14 }}>
+                    {done ? "✓" : active ? <span style={{ width: 8, height: 8, background: "#F5C518", borderRadius: "50%", display: "block", animation: "pulse 1.5s ease infinite" }} /> : <span style={{ color: "#444", fontSize: 12 }}>{i + 1}</span>}
+                  </div>
+                  <div>
+                    <div style={{ color: done || active ? "#fff" : "#444", fontWeight: 600, fontSize: 14 }}>{s.label}</div>
+                    {active && <div style={{ color: "#F5C518", fontSize: 12, marginTop: 2 }}>{s.desc}</div>}
+                    {done && <div style={{ color: "#555", fontSize: 12, marginTop: 2 }}>Completado</div>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <p style={{ textAlign: "center", color: "#333", fontSize: 12, marginTop: 28 }}>
+            No cierres esta ventana — el análisis se completará en breve
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  // ── Enviado sin pipeline (fallback) ───────────────────────────────────────
+  if (submitted && !procesando) {
     return (
       <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0A0A0A", padding: "40px 20px" }}>
         <div style={{ maxWidth: 500, textAlign: "center" }} className="animate-fade-in">

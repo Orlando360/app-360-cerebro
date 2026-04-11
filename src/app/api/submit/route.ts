@@ -71,17 +71,6 @@ export async function POST(request: NextRequest) {
         estado: "pendiente",
       });
 
-      // Fire-and-forget: trigger Claude processing in background
-      const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || vercelUrl || "http://localhost:3000";
-
-      fetch(`${baseUrl}/api/procesar-diagnostico`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ diagnosticoId }),
-      }).catch((err) => {
-        console.error("[Submit] Background processing trigger failed:", err);
-      });
     } catch (err) {
       // Don't block submission if diagnosticos fails
       console.error("[Submit] Diagnosticos save failed (non-blocking):", err);
@@ -91,6 +80,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: "Diagnóstico recibido exitosamente",
       clientId: client.id,
+      diagnosticoId,
     });
   } catch (error) {
     console.error("Error processing submission:", error);
