@@ -1,5 +1,5 @@
 import { inngest } from "../client";
-import Anthropic from "@anthropic-ai/sdk";
+import { callAnthropicWithRetry } from "@/lib/anthropic-retry";
 import { createClient } from "@supabase/supabase-js";
 
 function getSupabase() {
@@ -10,13 +10,13 @@ function getSupabase() {
 }
 
 async function callClaude(prompt: string): Promise<string> {
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
-  const msg = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 2000,
-    messages: [{ role: "user", content: prompt }],
-  });
-  return msg.content[0].type === "text" ? msg.content[0].text : "";
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY no configurada");
+  const response = await callAnthropicWithRetry(
+    { model: "claude-sonnet-4-6", max_tokens: 2000, messages: [{ role: "user", content: prompt }] },
+    apiKey,
+  );
+  return response.content.find(b => b.type === "text")?.text ?? "";
 }
 
 // Stores progress as JSON in estrategia_generada; final step replaces with markdown report
