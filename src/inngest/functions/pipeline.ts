@@ -13,7 +13,7 @@ async function callClaude(prompt: string): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY no configurada");
   const response = await callAnthropicWithRetry(
-    { model: "claude-opus-4-7", max_tokens: 2000, messages: [{ role: "user", content: prompt }] },
+    { model: "claude-opus-4-7", max_tokens: 2800, messages: [{ role: "user", content: prompt }] },
     apiKey,
   );
   return response.content.find(b => b.type === "text")?.text ?? "";
